@@ -5,6 +5,7 @@ spring:
   sql.init.platform: h2
 cds:
   data-source.auto-config.enabled: false
+  security.authentication.authenticate-unknown-endpoints: false
 ---
 management:
   endpoint:
@@ -25,5 +26,8 @@ cds:
       users:
         - name: admin
           password: admin
+          roles: [admin]
         - name: user
           password: user
+        - name: alice
+          password: alice

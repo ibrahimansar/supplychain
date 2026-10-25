@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunknasablink_react=self.webpackChunknasablink_react||[]).push([[201],{9201:(a,e,s)=>{s.r(e),s.d(e,{default:()=>l});var n=s(3216),c=s(579);const l=()=>(0,c.jsx)(n.C5,{to:"/login",replace:!0})}}]);
+//# sourceMappingURL=201.2d9241d5.chunk.js.map

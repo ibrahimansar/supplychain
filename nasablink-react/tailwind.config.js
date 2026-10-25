@@ -1,0 +1,180 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+          950: '#042f2e',
+        },
+        accent: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316',
+          600: '#ea580c',
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
+        },
+        surface: {
+          50: '#fafaf9',
+          100: '#f5f5f4',
+          200: '#e7e5e4',
+          800: '#1c1917',
+          900: '#0c0a09',
+          950: '#0a0908',
+        },
+        gray: {
+          50: '#f9fafb',
+          100: '#f3f4f6',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
+          500: '#6b7280',
+          600: '#4b5563',
+          700: '#374151',
+          800: '#1f2937',
+          900: '#111827',
+          950: '#030712',
+        },
+      },
+      fontFamily: {
+        // Matches apple.com: SF Pro on Apple devices, Helvetica Neue elsewhere
+        'sans': [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"SF Pro Text"',
+          '"SF Pro Icons"',
+          '"Helvetica Neue"',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+        ],
+        'display': [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"SF Pro Display"',
+          '"SF Pro Text"',
+          '"SF Pro Icons"',
+          '"Helvetica Neue"',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+        ],
+        'arabic': ['Amiri', 'serif'],
+        'body': [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"SF Pro Text"',
+          '"Helvetica Neue"',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+        ],
+      },
+      fontSize: {
+        '2xs': ['0.625rem', { lineHeight: '0.875rem' }],
+      },
+      borderRadius: {
+        '4xl': '2rem',
+      },
+      boxShadow: {
+        'glow': 'none',
+        'glow-lg': 'none',
+        'inner-glow': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
+        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03)',
+        'card-hover': '0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
+        'elevated': '0 20px 50px -12px rgba(0, 0, 0, 0.12)',
+      },
+      backgroundImage: {
+        'grid-pattern': 'none',
+        'hero-gradient': 'none',
+        'hero-gradient-dark': 'none',
+      },
+      backgroundSize: {
+        'grid': '24px 24px',
+      },
+      transitionDuration: {
+        '400': '400ms',
+        '600': '600ms',
+      },
+      transitionTimingFunction: {
+        'smooth': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'smooth-out': 'cubic-bezier(0, 0, 0.2, 1)',
+        'smooth-in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
+      animation: {
+        'fade-in': 'fadeIn 600ms ease-out',
+        'fade-in-up': 'fadeInUp 700ms ease-out',
+        'scale-in': 'scaleIn 200ms ease-out',
+        'slide-up': 'slideUp 500ms cubic-bezier(0.16, 1, 0.3, 1)',
+        'slide-down': 'slideDown 300ms ease-out',
+        'shimmer': 'shimmer 2s infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-soft': 'pulseSoft 3s ease-in-out infinite',
+        'gradient': 'gradient 8s ease infinite',
+        'count-up': 'countUp 1s ease-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(30px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        pulseSoft: {
+          '0%, 100%': { opacity: '0.4' },
+          '50%': { opacity: '0.8' },
+        },
+        gradient: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        countUp: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+    },
+  },
+  plugins: [],
+}

@@ -1,0 +1,953 @@
+/* Hide only elements with .print-hide during print, not all except .only-tree */
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+  .only-tree {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: white !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    z-index: 9999 !important;
+  }
+  
+  /* Hide page elements during print */
+  nav, .navbar, .footer, header, footer {
+    display: none !important;
+  }
+  
+  /* Hide React Flow controls and panels */
+  .react-flow__controls,
+  .react-flow__minimap,
+  .react-flow__panel {
+    display: none !important;
+  }
+  
+  /* Hide FABs and floating elements */
+  .fixed, .absolute {
+    display: none !important;
+  }
+  
+  /* Hide buttons and interactive elements */
+  button, .btn, .button {
+    display: none !important;
+  }
+  
+  /* Ensure tree container takes full page */
+  .tree-container, .react-flow {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Hide any overlays or modals */
+  .overlay, .modal, .popup {
+    display: none !important;
+  }
+  
+  /* Ensure background is white */
+  body {
+    background: white !important;
+  }
+}
+/* eslint-disable */
+/* stylelint-disable */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Prevent layout shift globally */
+* {
+  box-sizing: border-box;
+}
+
+/*
+  Light-only theme. Legacy dark: utilities remain in markup but never apply
+  because .dark is never set on <html>.
+*/
+:root {
+  color-scheme: light;
+  background-color: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: inherit; /* inherit from html so it is always in sync */
+}
+
+/* Ensure all images have dimensions or use aspect-ratio */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Prevent content jumping during loading */
+.loading-placeholder {
+  min-height: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Smooth transitions for interactive elements.
+   Deliberately NOT "transition: all" — that would re-transition background-color
+   on every route change, producing a visible colour-flash during navigation. */
+button, a, input, select, textarea {
+  transition:
+    color          200ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color   200ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity        200ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow     200ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform      200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Right-to-left ──────────────────────────────────────────────────────────
+ *
+ * The interface uses Tailwind's logical utilities (ms/me, ps/pe, start/end,
+ * text-start/end), which already resolve against `dir`. So there is very little
+ * to do here, and what used to be here actively broke the layout:
+ *
+ *   [dir="rtl"] .flex-row { flex-direction: row-reverse; }
+ *
+ * Flexbox reverses on its own under dir="rtl". Forcing row-reverse on top
+ * reversed it a second time, so every flex row rendered back in left-to-right
+ * order with its alignment inverted — which is what made RTL look broken.
+ * The same applied to the hand-written .pl-4 / .text-left / .rounded-l-lg
+ * overrides: they now duplicate what the logical utilities do, and any rule
+ * that both sets a physical property and relies on a logical one double-applies.
+ *
+ * Add nothing here that a logical utility can express.
+ * ─────────────────────────────────────────────────────────────────────────── */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+/* Content that must stay left-to-right whatever the interface does: email
+   addresses, URLs, person IDs, code and GEDCOM snippets. */
+[dir="rtl"] .ltr-force {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Directional glyphs — arrows and chevrons point the wrong way when mirrored.
+   Applied per icon rather than globally, because most icons must not flip. */
+[dir="rtl"] .icon-flip {
+  transform: scaleX(-1);
+}
+
+@layer base {
+  :root {
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px rgba(16,24,40,.06);
+    --shadow-md: 0 2px 8px rgba(16,24,40,.08);
+    --shadow-lg: 0 8px 24px rgba(16,24,40,.12);
+    --duration-fast: 200ms;
+    --duration: 300ms;
+    --duration-slow: 400ms;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  .dark {
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+    --shadow-md: 0 2px 8px rgba(0,0,0,.4);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,.5);
+  }
+
+  html, body {
+    /* Apple website standard: SF Pro Text / system UI */
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons",
+      "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons",
+      "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .font-display {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+      "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .font-heritage {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+      "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .font-legacy {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+      Helvetica, Arial, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  .arabic-text {
+    font-family: 'Amiri', serif;
+    direction: rtl;
+  }
+}
+
+@layer components {
+  /* Design tokens helpers */
+  .surface { @apply bg-white rounded-2xl shadow-sm border border-gray-200; }
+  .surface.dark { @apply bg-gray-800 border-gray-700; }
+  .heading-1 { @apply text-3xl font-bold text-gray-900; }
+  .heading-1.dark { @apply text-white; }
+  .heading-2 { @apply text-2xl font-semibold text-gray-900; }
+  .heading-2.dark { @apply text-white; }
+  .heading-3 { @apply text-xl font-semibold text-gray-900; }
+  .heading-3.dark { @apply text-white; }
+  .text-muted { @apply text-sm text-gray-600; }
+  .text-muted.dark { @apply text-gray-400; }
+  /* Motion keyframes - Smooth transitions with cubic-bezier easing */
+  @keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes scale-in { from { opacity: 0; transform: translateY(8px) scale(.98) } to { opacity: 1; transform: translateY(0) scale(1) } }
+  @keyframes slide-in-right { from { opacity: 0; transform: translateX(100%) } to { opacity: 1; transform: translateX(0) } }
+  @keyframes slide-up { from { opacity: 0; transform: translateX(-50%) translateY(20px) } to { opacity: 1; transform: translateX(-50%) translateY(0) } }
+  @keyframes shake { 0%, 100% { transform: translateX(0) } 25% { transform: translateX(-5px) } 75% { transform: translateX(5px) } }
+  @keyframes pulse-error { 0%, 100% { opacity: 1 } 50% { opacity: 0.7 } }
+  .animate-fade-in { animation: fade-in 300ms cubic-bezier(0.16, 1, 0.3, 1); }
+  /* Skeleton → content swap. Opacity only: animating height or transform here
+     would trade a flicker for a layout shift. */
+  .animate-content-in { animation: fade-in 150ms ease-out; }
+  .animate-scale-in { animation: scale-in 350ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .animate-slide-in-right { animation: slide-in-right 400ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .animate-slide-up { animation: slide-up 350ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .animate-shake { animation: shake 500ms cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+  .animate-pulse-error { animation: pulse-error 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-out;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-out;
+  }
+  .btn-secondary.dark {
+    @apply bg-gray-700 hover:bg-gray-600 text-gray-200;
+  }
+  
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-out;
+  }
+  
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 ease-out;
+  }
+
+  /* Ripple animation */
+  @keyframes ripple {
+    0% { transform: scale(0); opacity: .35; }
+    100% { transform: scale(1); opacity: 0; }
+  }
+  .ripple {
+    animation: ripple 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in, .animate-content-in, .animate-scale-in, .ripple { animation: none !important; }
+    .transition, .transition-all, .transition-colors, .transition-shadow { transition: none !important; }
+  }
+  
+  .form-input {
+    @apply block w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 ease-out placeholder-gray-300;
+  }
+  .dark .form-input {
+    @apply bg-gray-800 border-gray-600 text-white placeholder-gray-500;
+  }
+
+  /* Professional select styling across the app */
+  select.form-input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    padding-right: 2.25rem; /* make room for chevron */
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNCcgaGVpZ2h0PScxNCcgdmlld0JveD0nMCAwIDI0IDI0JyBmaWxsPSdub25lJyBzdHJva2U9JyM2YjcyODAnIHN0cm9rZS13aWR0aD0nMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJz48cGF0aCBkPSdtNiA5IDYgNiA2LTYnLz48L3N2Zz4=");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    background-size: 14px 14px;
+  }
+  .dark select.form-input {
+    background-color: #1f2937;
+    color: #fff;
+    border-color: #4b5563;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNCcgaGVpZ2h0PScxNCcgdmlld0JveD0nMCAwIDI0IDI0JyBmaWxsPSdub25lJyBzdHJva2U9JyM5Y2EzYWYnIHN0cm9rZS13aWR0aD0nMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJz48cGF0aCBkPSdtNiA5IDYgNiA2LTYnLz48L3N2Zz4=");
+  }
+
+  /* High-contrast focus for selects as well */
+  select.form-input:focus {
+    outline: none;
+  }
+
+  .form-textarea {
+    @apply block w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 ease-out resize-none placeholder-gray-300;
+  }
+  .dark .form-textarea {
+    @apply bg-gray-800 border-gray-600 text-white placeholder-gray-500;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+  .dark .form-label {
+    @apply text-gray-300;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+  .card.dark {
+    @apply bg-gray-800 border border-gray-700;
+  }
+  
+  .tree-node {
+    @apply bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .tree-node.selected {
+    @apply border-primary-500 bg-primary-50;
+  }
+
+  /* Tree Structure Styles */
+  .tree-container {
+    @apply flex justify-center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Minimum zoom scale: 0.25 (25% minimum zoom) */
+    /* Maximum zoom scale: 3.0 (300% maximum zoom) */
+  }
+
+  .tree-node-wrapper {
+    @apply relative flex flex-col items-center;
+  }
+
+  .tree-root {
+    @apply mb-8;
+  }
+
+  .tree-person-node {
+    @apply relative z-10 mb-6;
+  }
+
+  .person-card {
+    @apply bg-white border-2 border-gray-300 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer p-4 min-w-[200px] max-w-[250px];
+  }
+
+  .person-card.dark {
+    @apply bg-gray-800 border-gray-600 text-white;
+  }
+
+  .person-card:hover {
+    @apply border-primary-400 transform scale-105;
+  }
+
+  .root-node .person-card {
+    @apply border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 shadow-xl;
+  }
+
+  .root-node .person-card.dark {
+    @apply border-yellow-400 bg-gradient-to-br from-yellow-900/20 to-orange-900/20;
+  }
+
+  .person-info {
+    @apply text-center;
+  }
+
+  .person-name {
+    @apply font-bold text-gray-900 text-lg mb-1;
+  }
+
+  .person-title {
+    @apply text-sm text-primary-600 font-medium mb-2;
+  }
+
+  .person-dates {
+    @apply text-xs text-gray-500 space-x-2;
+  }
+
+  .expand-button {
+    @apply absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded-full p-1 hover:bg-gray-50 transition-colors z-20;
+  }
+
+  .expand-button.dark {
+    @apply bg-gray-800 border-gray-600 hover:bg-gray-700;
+  }
+
+  .add-descendant-button,
+  .add-parent-button,
+  .tree-node-action {
+    @apply z-30 inline-flex items-center justify-center rounded-full
+      bg-white text-slate-700 ring-1 ring-slate-200/90 shadow-md
+      hover:bg-slate-900 hover:text-white hover:ring-slate-900
+      transition-all duration-150;
+  }
+
+  .add-descendant-button {
+    @apply absolute -bottom-3 right-2 h-8 w-8;
+  }
+
+  .add-parent-button {
+    @apply absolute -top-4 left-1/2 -translate-x-1/2 h-8 w-8;
+  }
+
+  .tree-node-actions {
+    @apply absolute -top-3 -right-3 flex items-center gap-1 z-30;
+  }
+
+  .tree-node-action {
+    @apply h-7 w-7;
+  }
+
+  /* Connecting Lines */
+  .tree-connector {
+    @apply absolute top-0;
+  }
+
+  .tree-line-vertical {
+    @apply w-px h-6 bg-gray-400 absolute top-0 left-1/2 transform -translate-x-1/2;
+  }
+
+  .tree-line-horizontal {
+    @apply h-px w-24 bg-gray-400 absolute top-6 left-1/2 transform -translate-x-1/2;
+  }
+
+  /* Children Layout */
+  .tree-children {
+    @apply relative;
+  }
+
+  /* Single child connector with arrow */
+  .single-child-connector {
+    @apply absolute top-0 left-1/2 transform -translate-x-1/2;
+  }
+
+  .single-child-connector .vertical-line {
+    @apply w-px h-8 bg-gray-400;
+  }
+
+  .single-child-connector .arrow-down {
+    @apply w-0 h-0 mx-auto;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #9CA3AF;
+  }
+
+  /* Multiple children connector with distribution */
+  .multiple-children-connector {
+    @apply absolute top-0 left-0 right-0 h-12;
+  }
+
+  .multiple-children-connector .main-vertical-line {
+    @apply w-px h-4 bg-gray-400 absolute left-1/2 transform -translate-x-1/2;
+  }
+
+  .multiple-children-connector .horizontal-distribution-line {
+    @apply h-px bg-gray-400 absolute top-4 left-1/4 right-1/4;
+  }
+
+  /* Individual child arrows */
+  .child-connector-arrow {
+    @apply absolute top-4;
+  }
+
+  .child-connector-arrow .vertical-arrow-line {
+    @apply w-px h-4 bg-gray-400 mx-auto;
+  }
+
+  .child-connector-arrow .arrow-down {
+    @apply w-0 h-0 mx-auto;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #9CA3AF;
+  }
+
+  .children-grid {
+    @apply flex justify-center items-start gap-8 mt-12;
+  }
+
+  .child-wrapper {
+    @apply relative;
+  }
+
+  /* Enhanced Tree Viewer Styles */
+  .highlighted .person-card {
+    @apply border-yellow-400 bg-yellow-50 shadow-xl animate-pulse;
+  }
+
+  /* Smooth transitions for tree operations */
+  .tree-node-wrapper {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Performance optimizations */
+  .tree-children {
+    @apply will-change-transform;
+  }
+
+  .person-card {
+    @apply will-change-transform;
+  }
+
+  /* Cursor styles for panning */
+  .cursor-grab {
+    cursor: grab;
+  }
+
+  .cursor-grabbing {
+    cursor: grabbing;
+  }
+
+  /* Minimap styles */
+  .minimap-node {
+    @apply w-1 h-1 bg-primary-400 rounded-full absolute;
+  }
+
+  /* Large tree optimizations */
+  @media (max-width: 768px) {
+    .children-grid {
+      @apply gap-4;
+    }
+    
+    .person-card {
+      @apply min-w-[160px] max-w-[200px] text-sm;
+    }
+    
+    .add-descendant-button {
+      @apply p-1 right-1;
+    }
+  }
+  
+  /* Focused lineage styles - only apply when someone is focused */
+  .tree-viewer.has-focus .focused-person .person-card {
+    @apply border-4 border-blue-500 bg-blue-100 shadow-xl;
+  }
+  
+  .tree-viewer.has-focus .focused-person .person-card.dark {
+    @apply bg-blue-900/20;
+  }
+  
+  .tree-viewer.has-focus .focused-lineage .person-card {
+    @apply border-2 border-blue-300 bg-blue-50 shadow-lg;
+  }
+  
+  .tree-viewer.has-focus .focused-lineage .person-card.dark {
+    @apply bg-blue-900/10;
+  }
+  
+  /* Dim non-focused nodes when a person is focused */
+  .tree-viewer.has-focus .tree-person-node:not(.focused-person):not(.focused-lineage) .person-card {
+    @apply opacity-30 filter grayscale;
+  }
+
+  /* Very large screens */
+  @media (min-width: 1920px) {
+    .children-grid {
+      @apply gap-12;
+    }
+    
+    .person-card {
+      @apply min-w-[220px] max-w-[280px];
+    }
+  }
+
+  /* Focused lineage styles */
+  .focused-person .person-card {
+    @apply ring-4 ring-blue-500 bg-blue-50 shadow-lg scale-105;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+  }
+
+  .focused-person .person-card.dark {
+    @apply bg-blue-900/20;
+  }
+
+  .focused-lineage .person-card {
+    @apply ring-2 ring-blue-300 bg-blue-50 shadow-md;
+    transition: all 0.3s ease;
+  }
+
+  .focused-lineage .person-card.dark {
+    @apply bg-blue-900/10;
+  }
+
+  .tree-person-node:not(.focused-lineage):not(.focused-person) {
+    @apply opacity-40;
+    transition: opacity 0.3s ease;
+  }
+
+  .tree-person-node:not(.focused-lineage):not(.focused-person):hover {
+    @apply opacity-70;
+  }
+
+  /* Arrow styles for tree connections */
+  .arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #9CA3AF;
+    margin: 0 auto;
+  }
+
+  .vertical-line {
+    width: 2px;
+    height: 20px;
+    background-color: #9CA3AF;
+    margin: 0 auto;
+  }
+
+  .single-child-connector {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+
+  .multiple-children-connector {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  .main-vertical-line {
+    width: 2px;
+    height: 20px;
+    background-color: #9CA3AF;
+    margin: 0 auto;
+  }
+
+  .horizontal-distribution-line {
+    height: 2px;
+    background-color: #9CA3AF;
+    margin: 0 15%;
+    position: relative;
+    top: -1px;
+  }
+
+  .child-connector-arrow {
+    position: absolute;
+    top: 0;
+  }
+
+  .vertical-arrow-line {
+    width: 2px;
+    height: 20px;
+    background-color: #9CA3AF;
+    margin: 0 auto;
+  }
+
+  .tree-children {
+    position: relative;
+    margin-top: 40px;
+  }
+
+  /* React Flow Controls Styling */
+  .react-flow__controls {
+    z-index: 1000 !important;
+  }
+
+  .react-flow__controls button {
+    background-color: white !important;
+    border: 1px solid #d1d5db !important;
+    color: #374151 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .react-flow__controls button:hover {
+    background-color: #f9fafb !important;
+  }
+
+  .react-flow__controls button svg {
+    fill: #374151 !important;
+  }
+
+  /* Dark mode overrides for React Flow controls */
+  html.dark .react-flow__controls button {
+    background-color: #1f2937 !important; /* gray-800 */
+    border: 1px solid #374151 !important; /* gray-700 */
+    color: #d1d5db !important;
+  }
+
+  html.dark .react-flow__controls button:hover {
+    background-color: #374151 !important; /* gray-700 */
+  }
+
+  html.dark .react-flow__controls button svg {
+    fill: #d1d5db !important;
+  }
+
+  /* React Flow Edge and Arrow Styling */
+  .react-flow__edge-path {
+    stroke: #D1D5DB !important;
+    stroke-width: 3 !important;
+  }
+
+  .react-flow__arrowhead {
+    fill: #D1D5DB !important;
+    stroke: #D1D5DB !important;
+  }
+
+  /* Ensure all markers are visible */
+  .react-flow svg marker {
+    fill: #D1D5DB !important;
+    stroke: #D1D5DB !important;
+  }
+
+  /* React Flow Pane Styling - Remove any default margins */
+  .react-flow__pane {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Butter-smooth zoom: CSS transition on the viewport transform */
+  .react-flow__viewport {
+    transition: transform 80ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+  /* Disable transition while mouse-drag panning to prevent elastic lag */
+  .rf-panning .react-flow__viewport {
+    transition: none !important;
+  }
+  
+  /* Hide scrollbars on tree page */
+  body:has(.tree-viewer) {
+    overflow: hidden !important;
+  }
+  
+  /* Hide scrollbars in popups while allowing scrolling */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+}
+
+/* Stack tables on mobile */
+.stack-table thead { @apply hidden sm:table-header-group; }
+.stack-table tr { @apply block sm:table-row; }
+.stack-table td { @apply block sm:table-cell; }
+.stack-table td { position: relative; padding-left: 7rem; }
+.stack-table td::before {
+  content: attr(data-label);
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  width: 6rem;
+  font-size: 0.75rem;
+  color: #6b7280; /* gray-500 */
+  font-weight: 500;
+}
+@media (min-width: 640px) {
+  .stack-table td { padding-left: 1rem; }
+  .stack-table td::before { content: none; }
+}
+
+/* ── Zoom-aware labels (inverse of camera zoom) ───────────────────
+   --tree-label-scale is set from JS as ~1/zoom so:
+     zoom out → names grow on screen
+     zoom in  → names stay restrained
+   Font-size (not transform) is used so the card can contain the text.
+   Card width is fixed below NODE_SLOT so siblings never collide.
+*/
+.tree-node {
+  box-sizing: border-box;
+  width: 240px;
+  max-width: 240px;
+  min-width: 240px;
+  /* visible so hover action buttons can sit outside the card */
+  overflow: visible;
+}
+
+.tree-node-body {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.75rem;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Soft gender tints — solid pastels so edges never show through the card */
+.tree-node.tree-node-tint-blue {
+  background-color: #d9e8f8;
+  border-color: #a8c4e0;
+}
+.tree-node.tree-node-tint-lavender {
+  /* english lavender */
+  background-color: #e8dff2;
+  border-color: #c4b3d4;
+}
+.tree-node.tree-node-tint-maroon {
+  background-color: #f0e0e4;
+  border-color: #d4a8b4;
+}
+.tree-node.tree-node-root {
+  background-color: #f7edd8;
+  background-image: linear-gradient(145deg, #ffe9c4, #e8dff2);
+}
+
+/* Compact nodes for the landing product preview */
+.landing-preview-node {
+  box-sizing: border-box;
+  width: 148px;
+  max-width: 148px;
+  min-width: 148px;
+  padding: 0.45rem 0.5rem;
+  overflow: hidden;
+}
+
+.tree-node-name {
+  font-size: calc(1.05rem * var(--tree-label-scale, 1));
+  line-height: 1.25;
+  font-weight: 700;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-inline: 0.15rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.tree-node-name .arabic-text {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.tree-density-medium .tree-node-body {
+  padding: 0.65rem !important;
+}
+.tree-density-medium .tree-node-name {
+  font-weight: 700 !important;
+  margin-bottom: 0.15rem !important;
+  -webkit-line-clamp: 2;
+}
+.tree-density-medium .tree-node-secondary,
+.tree-density-medium .tree-node-meta,
+.tree-density-medium .tree-node-spouse,
+.tree-density-medium .tree-node-photo {
+  display: none !important;
+}
+
+.tree-density-compact .tree-node {
+  border-width: 1.5px !important;
+  border-radius: 0.65rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+.tree-density-compact .tree-node-body {
+  padding: 0.55rem 0.65rem !important;
+}
+.tree-density-compact .tree-node-name {
+  font-weight: 800 !important;
+  margin-bottom: 0 !important;
+  -webkit-line-clamp: 2;
+}
+.tree-density-compact .tree-node-secondary,
+.tree-density-compact .tree-node-meta,
+.tree-density-compact .tree-node-spouse,
+.tree-density-compact .tree-node-photo,
+.tree-density-compact .tree-node-badge {
+  display: none !important;
+}
+
+/* Slightly thicker edges when zoomed out so connectors stay visible */
+.tree-density-compact .react-flow__edge-path,
+.tree-density-medium .react-flow__edge-path {
+  stroke-width: 2.5 !important;
+}
+
+/* ── Collapse / expand branch motion ───────────────────────────────── */
+.react-flow__node {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Kill React Flow's default bold selection box — looks unprofessional */
+.react-flow__node.selected,
+.react-flow__node:focus,
+.react-flow__node:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.react-flow__node.selected .tree-node {
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+@keyframes tree-node-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.tree-node.tree-node-entering {
+  animation: tree-node-enter 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--tree-enter-delay, 0ms);
+}
+
+.tree-node.tree-node-collapsed {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  border-style: dashed;
+}
+
+@keyframes tree-edge-enter {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 24;
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+.react-flow__edge.tree-edge-entering .react-flow__edge-path {
+  stroke-dasharray: 6 4;
+  animation: tree-edge-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .react-flow__node {
+    transition: none !important;
+  }
+  .tree-node.tree-node-entering,
+  .react-flow__edge.tree-edge-entering .react-flow__edge-path {
+    animation: none !important;
+  }
+}

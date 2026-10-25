@@ -31,3 +31,5 @@ hs_err*
 .reloadtrigger
 
 .env1
+# React build output (served by Spring Boot from app/)
+app/react/

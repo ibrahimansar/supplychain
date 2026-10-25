@@ -1,5 +1,12 @@
 using CatalogService as service from '../../srv/catalog-service';
 annotate service.Products with @(
+    UI.HeaderInfo : {
+        TypeName       : 'Product',
+        TypeNamePlural : 'Products',
+        Title          : { Value : name },
+        Description    : { Value : category },
+    },
+    UI.SelectionFields : [ name, category ],
     UI.FieldGroup #GeneratedGroup : {
         $Type : 'UI.FieldGroupType',
         Data : [
@@ -53,6 +60,11 @@ annotate service.Products with @(
             $Type : 'UI.DataField',
             Label : 'stock',
             Value : stock,
+        },
+        {
+            $Type : 'UI.DataField',
+            Label : 'Supplier',
+            Value : supplier.name,
         },
     ],
 );

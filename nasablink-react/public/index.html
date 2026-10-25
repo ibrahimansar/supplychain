@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+  <!-- Favicon: use nasablink.png for all platforms -->
+  <link rel="icon" type="image/png" href="%PUBLIC_URL%/nasablink.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f766e" />
+    <meta
+      name="description"
+      content="NasabLink - Preserve the stories. Share the love Connect with your family tree."
+    />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/nasablink.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <!-- Amiri for Arabic only; UI/Latin uses Apple SF Pro via system font stack -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <title>NasabLink - Family Tree Platform</title>
+  </head>
+  <body>
+    <!-- Force light theme: clear any legacy dark preference before first paint -->
+    <script>
+      (function () {
+        try {
+          localStorage.removeItem('nasablink-theme');
+          document.documentElement.classList.remove('dark');
+        } catch (e) { /* private browsing */ }
+      }());
+    </script>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
