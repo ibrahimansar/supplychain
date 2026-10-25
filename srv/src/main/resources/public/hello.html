@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h3>Hello OData</h3>
+  <input id="name" placeholder="Your name">
+  <button onclick="callHello()">Call function (GET)</button>
+  <button onclick="callEcho()">Call action (POST)</button>
+  <pre id="out"></pre>
+
+  <script>
+    const base = '/odata/v4/hello';
+    const out = document.getElementById('out');
+
+    async function callHello() {
+      const name = document.getElementById('name').value;
+      const res = await fetch(`${base}/hello(name='${encodeURIComponent(name)}')`);
+      out.textContent = JSON.stringify(await res.json(), null, 2);
+    }
+
+    async function callEcho() {
+      const message = document.getElementById('name').value;
+      const res = await fetch(`${base}/echo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
+      out.textContent = JSON.stringify(await res.json(), null, 2);
+    }
+  </script>
+</body>
+</html>

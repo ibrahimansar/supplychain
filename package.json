@@ -1,0 +1,8 @@
+{
+  "name": "supplyChain-cds",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@sap/cds-dk": "^10.1.0"
+  },
+  "dependencies": {}
+}
